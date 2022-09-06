@@ -20,6 +20,7 @@ connectDB()
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
+app.use(morgan('dev'))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/v1/product', productRoutes)

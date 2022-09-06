@@ -7,6 +7,7 @@ import {
 } from '../../utils/generateTokenJwt.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import * as moment from '../../utils/moment.js'
 
 /*  
     @desc       fetch login
@@ -19,26 +20,32 @@ export const login = asyncHandler(async (req, res) => {
     const user = await User.findOne({ username })
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const data = {
-        _id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        lastLogin: user.lastLogin,
-        isAdmin: user.isAdmin,
-      }
       const accessToken = generateAccessToken({ userId: user._id })
       const refreshToken = generateRefreshToken({ userId: user._id })
 
       user.refreshToken = refreshToken
       user.lastLogin = new Date()
+
       user.save()
+
+      const data = {
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        lastLogin: moment.tanggalJamFormatIndonesia(user.lastLogin),
+        isAdmin: user.isAdmin,
+      }
 
       res.cookie('refreshToken', refreshToken, {
         maxAge: 60 * 60 * 24 * 1000,
         httpOnly: true,
       })
-      res.status(200).json({ message: 'login success', data, accessToken })
+      res.status(200).json({
+        message: 'login success',
+        data,
+        accessToken,
+      })
     }
     const err = new Error('Unauthorized')
     err.statusCode = 401
