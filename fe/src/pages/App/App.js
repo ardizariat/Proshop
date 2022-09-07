@@ -1,13 +1,13 @@
-import { Router } from '../../config'
 import React from 'react'
-import store from '../../redux/store'
 import { Provider } from 'react-redux'
+// import store from '../../redux/store'
+import { Router } from '../../config'
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <Router />
-    </Provider>
+    // <Provider store={store}>
+    <Router />
+    // </Provider>
   )
 }
 

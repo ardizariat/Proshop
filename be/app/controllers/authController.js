@@ -74,15 +74,6 @@ export const refreshToken = asyncHandler(async (req, res) => {
         throw err
       }
 
-      const data = {
-        _id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        lastLogin: user.lastLogin,
-        isAdmin: user.isAdmin,
-      }
-
       jwt.verify(token, REFRESH_TOKEN_JWT, (err, decode) => {
         if (err) {
           const error = new Error(error)
@@ -90,7 +81,7 @@ export const refreshToken = asyncHandler(async (req, res) => {
           throw error
         }
         const accessToken = generateAccessToken({ userId: decode.userId })
-        res.status(200).json({ data, accessToken })
+        res.status(200).json({ accessToken })
       })
     }
   } catch (error) {

@@ -10,7 +10,6 @@ const auth = asyncHandler(async (req, res, next) => {
   if (authorization && authorization.startsWith('Bearer')) {
     token = authorization.split(' ')[1]
     const decode = jwt.verify(token, ACCESS_TOKEN_JWT)
-
     const user = await User.findById(decode.userId).select('-password -idAdmin')
     if (!user) {
       const err = new Error('user not found')

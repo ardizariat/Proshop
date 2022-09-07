@@ -1,40 +1,41 @@
-import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import React, { useState } from 'react'
 import { Row, Col } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import { Gap, InputForm, Message, Loader } from '../../components'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { login } from '../../redux/actions/userAction'
+import { Link, useNavigate } from 'react-router-dom'
+import { Gap, InputForm } from '../../components'
+import api from '../../services/api'
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  })
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
 
-  const dispatch = useDispatch()
-  const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userLogin
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setMessage('')
     try {
-      dispatch(login(username, password))
-      // navigate('/')
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+      const { data } = await axios.post(
+        'http://127.0.0.1:8000/api/auth/login',
+        JSON.stringify(formData),
+        config
+      )
+      navigate('/')
     } catch (error) {
-      setMessage(error.message)
+      console.log(error)
     }
   }
 
-  useEffect(() => {
-    console.log(userInfo)
-  }, [dispatch, userInfo])
   return (
     <>
       <Gap height={100} />
       <Row className="d-flex justify-content-center">
-        <Col lg={4} xl={4} md={4} sm={12}>
+        <Col lg={4} xl={4} md={6} sm={12}>
           <ul
             className="nav nav-pills nav-justified mb-3"
             id="ex1"
@@ -68,21 +69,23 @@ const Login = () => {
             </li>
           </ul>
           <div className="tab-content">
-            <h3 className="text-danger">{message}</h3>
             <div
               className="tab-pane fade show active"
               id="pills-login"
               role="tabpanel"
               aria-labelledby="tab-login"
             >
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleSubmit}>
                 <div className="form-outline mb-4">
                   <label className="form-label" htmlFor="username">
                     Username
                   </label>
                   <InputForm
-                    onChange={(e) => setUsername(e.target.value)}
                     type="text"
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
+                    value={formData.username}
                     id="username"
                   />
                 </div>
@@ -91,7 +94,10 @@ const Login = () => {
                     Password
                   </label>
                   <InputForm
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    value={formData.password}
                     type="password"
                     id="password"
                   />
